@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LeaveRequestBackend.Models
+namespace Deer_Hub_Backend.Models
 {
     public class LeaveRequest
     {
