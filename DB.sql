@@ -8,10 +8,10 @@ DROP TABLE IF EXISTS LeaveRequests, Announcements, Employees, Users, Departments
 -- 1. Users Table
 CREATE TABLE Users (
     UserID INT PRIMARY KEY IDENTITY(1,1),
-    Username NVARCHAR(50) UNIQUE NOT NULL,
-    Email NVARCHAR(100) UNIQUE NOT NULL,
-    PasswordHash NVARCHAR(256) NOT NULL,
-    Role NVARCHAR(20) CHECK (Role IN ('Employee', 'Manager', 'Admin')),
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(256) NOT NULL,
+    Role VARCHAR(20) CHECK (Role IN ('Employee', 'Manager', 'Admin')),
     IsActive BIT DEFAULT 1,
     CreatedAt DATETIME DEFAULT GETDATE(),
     ModifiedAt DATETIME
@@ -20,18 +20,18 @@ CREATE TABLE Users (
 -- 2. Departments Table
 CREATE TABLE Departments (
     DepartmentID INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL UNIQUE,
-    Description NVARCHAR(255)
+    Name VARCHAR(100) NOT NULL UNIQUE,
+    Description VARCHAR(255)
 );
 
 -- 3. Employees Table
 CREATE TABLE Employees (
     EmployeeID INT PRIMARY KEY IDENTITY(1,1),
     UserID INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
-    FullName NVARCHAR(100) NOT NULL,
+    FullName VARCHAR(100) NOT NULL,
     DepartmentID INT NOT NULL FOREIGN KEY REFERENCES Departments(DepartmentID),
     DateOfJoining DATE NOT NULL,
-    PhoneNumber NVARCHAR(15),
+    PhoneNumber VARCHAR(15),
     IsActive BIT DEFAULT 1,
     CreatedAt DATETIME DEFAULT GETDATE(),
     ModifiedAt DATETIME
@@ -40,14 +40,14 @@ CREATE TABLE Employees (
 -- 4. LeaveTypes Table
 CREATE TABLE LeaveTypes (
     LeaveTypeID INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(50) NOT NULL UNIQUE,
-    Description NVARCHAR(255)
+    Name VARCHAR(50) NOT NULL UNIQUE,
+    Description VARCHAR(255)
 );
 
 -- 5. LeaveStatuses Table
 CREATE TABLE LeaveStatuses (
     StatusID INT PRIMARY KEY IDENTITY(1,1),
-    StatusName NVARCHAR(50) NOT NULL UNIQUE
+    StatusName VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- 6. LeaveRequests Table
@@ -58,9 +58,9 @@ CREATE TABLE LeaveRequests (
     StatusID INT FOREIGN KEY REFERENCES LeaveStatuses(StatusID),
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
-    Reason NVARCHAR(255),
-    Priority NVARCHAR(20) CHECK (Priority IN ('Low', 'Normal', 'High', 'Urgent')) DEFAULT 'Normal',
-    DocumentPath NVARCHAR(255), -- stores file path or file name
+    Reason VARCHAR(255),
+    Priority VARCHAR(20) CHECK (Priority IN ('Low', 'Normal', 'High', 'Urgent')) DEFAULT 'Normal',
+    DocumentPath VARCHAR(255), -- stores file path or file name
     RequestedAt DATETIME DEFAULT GETDATE(),
     ApprovedBy INT NULL FOREIGN KEY REFERENCES Employees(EmployeeID),
     IsDeleted BIT DEFAULT 0,
@@ -70,8 +70,8 @@ CREATE TABLE LeaveRequests (
 -- 7. Announcements Table
 CREATE TABLE Announcements (
     AnnouncementID INT PRIMARY KEY IDENTITY(1,1),
-    Title NVARCHAR(100),
-    Description NVARCHAR(500),
+    Title VARCHAR(100),
+    Description VARCHAR(500),
     PostedBy INT FOREIGN KEY REFERENCES Employees(EmployeeID),
     PostedAt DATETIME DEFAULT GETDATE(),
     IsVisible BIT DEFAULT 1
@@ -96,7 +96,8 @@ VALUES
 ('Sick Leave', 'Leave taken when employee is unwell'),
 ('Casual Leave', 'Planned personal leave'),
 ('Maternity Leave', 'Leave for new mothers'),
-('Paternity Leave', 'Leave for new fathers');
+('Paternity Leave', 'Leave for new fathers'),
+('Special Occasion Leave', 'Leave for events liek weddings or functions');
 
 -- 3. Leave Statuses
 INSERT INTO LeaveStatuses (StatusName)
