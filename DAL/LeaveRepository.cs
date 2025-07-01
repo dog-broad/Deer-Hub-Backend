@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-<<<<<<< Updated upstream
 using Deer_Hub_Backend.Models;
-=======
-using Deer_Hub_Backend.Models; // Adjust based on your project structure
->>>>>>> Stashed changes
 
 namespace Deer_Hub_Backend.DAL
 {
