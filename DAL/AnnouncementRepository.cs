@@ -1,12 +1,35 @@
-﻿using System;
+﻿using Deer_Hub_Backend.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Announcement;
 
 namespace Deer_Hub_Backend.DAL
 {
-    internal class AnnouncementRepository
+    public class AnnouncementRepository
     {
+        public bool InsertAnnouncement(Announcement announcement)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("INSERT INTO Announcements (Title, Description, PostedBy, PostedAt, IsVisible) VALUES (@Title, @Description, @PostedBy, @PostedAt, @IsVisible)", con);
+                    cmd.Parameters.AddWithValue("@Title", announcement.Title);
+                    cmd.Parameters.AddWithValue("@Description", announcement.Description);
+                    cmd.Parameters.AddWithValue("@PostedBy", announcement.PostedBy);
+                    cmd.Parameters.AddWithValue("@PostedAt", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@IsVisible", announcement.IsVisible);
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AddAnnouncement Error: " + ex.Message);
+                return false;
+            }
+        }
+
         public List<Announcement> GetAllAnnouncements()
         {
             var announcements = new List<Announcement>();
@@ -38,15 +61,31 @@ namespace Deer_Hub_Backend.DAL
             return announcements;
         }
 
-        public bool UpdateAnnouncement(int id, string title, string description)
+        public bool UpdateAnnouncement(int id, string? title = null, string? description = null)
         {
             try
             {
                 using (var con = DBHelper.GetConnection())
                 {
-                    SqlCommand cmd = new SqlCommand("UPDATE Announcements SET Title = @Title, Description = @Description WHERE AnnouncementID = @ID", con);
-                    cmd.Parameters.AddWithValue("@Title", title);
-                    cmd.Parameters.AddWithValue("@Description", description);
+                    var updates = new List<string>();
+                    var cmd = new SqlCommand();
+                    cmd.Connection = con;
+
+                    if (title != null)
+                    {
+                        updates.Add("Title = @Title");
+                        cmd.Parameters.AddWithValue("@Title", title);
+                    }
+                    if (description != null)
+                    {
+                        updates.Add("Description = @Description");
+                        cmd.Parameters.AddWithValue("@Description", description);
+                    }
+
+                    if (updates.Count == 0)
+                        return false; // Nothing to update
+
+                    cmd.CommandText = $"UPDATE Announcements SET {string.Join(", ", updates)} WHERE AnnouncementID = @ID";
                     cmd.Parameters.AddWithValue("@ID", id);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;

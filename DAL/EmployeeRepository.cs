@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Employee; // Adjust if your model namespace is different
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {
@@ -70,24 +70,48 @@ namespace Deer_Hub_Backend.DAL
             return employees;
         }
 
-        public bool UpdateEmployeePhone(int employeeId, string newPhone)
+        public bool UpdateEmployee(int employeeId, string? fullName = null, int? departmentId = null, DateTime? dateOfJoining = null)
         {
             try
             {
+                var updates = new List<string>();
+                var parameters = new List<SqlParameter>();
+
+                if (fullName != null)
+                {
+                    updates.Add("FullName = @FullName");
+                    parameters.Add(new SqlParameter("@FullName", fullName));
+                }
+                if (departmentId.HasValue)
+                {
+                    updates.Add("DepartmentID = @DepartmentID");
+                    parameters.Add(new SqlParameter("@DepartmentID", departmentId.Value));
+                }
+                if (dateOfJoining.HasValue)
+                {
+                    updates.Add("DateOfJoining = @DateOfJoining");
+                    parameters.Add(new SqlParameter("@DateOfJoining", dateOfJoining.Value));
+                }
+
+                if (updates.Count == 0)
+                    return false; // Nothing to update
+
+                updates.Add("ModifiedAt = GETDATE()");
+
+                string sql = $"UPDATE Employees SET {string.Join(", ", updates)} WHERE EmployeeID = @EmployeeID";
+                parameters.Add(new SqlParameter("@EmployeeID", employeeId));
+
                 using (var con = DBHelper.GetConnection())
                 {
-                    string sql = "UPDATE Employees SET PhoneNumber = @PhoneNumber, ModifiedAt = GETDATE() WHERE EmployeeID = @EmployeeID";
                     SqlCommand cmd = new SqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", newPhone);
-                    cmd.Parameters.AddWithValue("@EmployeeID", employeeId);
-
+                    cmd.Parameters.AddRange(parameters.ToArray());
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("UpdateEmployeePhone Error: " + ex.Message);
+                Console.WriteLine("UpdateEmployee Error: " + ex.Message);
                 return false;
             }
         }
@@ -111,6 +135,41 @@ namespace Deer_Hub_Backend.DAL
                 Console.WriteLine("DeleteEmployee Error: " + ex.Message);
                 return false;
             }
+        }
+
+        public Employee GetEmployeeById(int employeeId)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    string sql = "SELECT * FROM Employees WHERE EmployeeID = @EmployeeID AND IsActive = 1";
+                    SqlCommand cmd = new SqlCommand(sql, con);
+                    cmd.Parameters.AddWithValue("@EmployeeID", employeeId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return new Employee
+                        {
+                            EmployeeID = (int)reader["EmployeeID"],
+                            UserID = (int)reader["UserID"],
+                            FullName = reader["FullName"].ToString(),
+                            DepartmentID = (int)reader["DepartmentID"],
+                            DateOfJoining = (DateTime)reader["DateOfJoining"],
+                            PhoneNumber = reader["PhoneNumber"].ToString(),
+                            IsActive = (bool)reader["IsActive"],
+                            CreatedAt = (DateTime)reader["CreatedAt"],
+                            ModifiedAt = reader["ModifiedAt"] as DateTime?
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetEmployeeById Error: " + ex.Message);
+            }
+            return null; // Not found
         }
     }
 }

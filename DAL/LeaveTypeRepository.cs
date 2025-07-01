@@ -1,12 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using LeaveType; // Adjust if your LeaveType model is in a different namespace
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {
     public class LeaveTypeRepository
     {
+        public bool InsertLeaveType(LeaveType leaveType)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("INSERT INTO LeaveTypes (Name, Description) VALUES (@Name, @Description)", con);
+                    cmd.Parameters.AddWithValue("@Name", leaveType.Name);
+                    cmd.Parameters.AddWithValue("@Description", leaveType.Description);
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("InsertLeaveType Error: " + ex.Message);
+                return false;
+            }
+        }
+
         public List<LeaveType> GetAllLeaveTypes()
         {
             var types = new List<LeaveType>();
@@ -35,15 +55,32 @@ namespace Deer_Hub_Backend.DAL
             return types;
         }
 
-        public bool UpdateLeaveType(int id, string name, string description)
+        public bool UpdateLeaveType(int id, string? name, string? description)
         {
             try
             {
                 using (var con = DBHelper.GetConnection())
                 {
-                    SqlCommand cmd = new SqlCommand("UPDATE LeaveTypes SET Name = @Name, Description = @Description WHERE LeaveTypeID = @ID", con);
-                    cmd.Parameters.AddWithValue("@Name", name);
-                    cmd.Parameters.AddWithValue("@Description", description);
+                    var updates = new List<string>();
+                    var cmd = new SqlCommand();
+                    cmd.Connection = con;
+
+                    if (name != null)
+                    {
+                        updates.Add("Name = @Name");
+                        cmd.Parameters.AddWithValue("@Name", name);
+                    }
+                    if (description != null)
+                    {
+                        updates.Add("Description = @Description");
+                        cmd.Parameters.AddWithValue("@Description", description);
+                    }
+
+                    if (updates.Count == 0)
+                        return false; // Nothing to update
+
+                    string updateClause = string.Join(", ", updates);
+                    cmd.CommandText = $"UPDATE LeaveTypes SET {updateClause} WHERE LeaveTypeID = @ID";
                     cmd.Parameters.AddWithValue("@ID", id);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;

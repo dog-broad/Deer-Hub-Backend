@@ -1,12 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using LeaveRequest; // Adjust based on your project structure
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {
     public class LeaveRepository
     {
+        public bool InsertLeaveRequest(LeaveRequest request)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    string sql = @"
+                INSERT INTO LeaveRequests 
+                (EmployeeID, LeaveTypeID, StatusID, StartDate, EndDate, Reason, RequestedAt, IsDeleted) 
+                VALUES 
+                (@EmployeeID, @LeaveTypeID, @StatusID, @StartDate, @EndDate, @Reason, GETDATE(), 0)";
+
+                    SqlCommand cmd = new SqlCommand(sql, con);
+                    cmd.Parameters.AddWithValue("@EmployeeID", request.EmployeeID);
+                    cmd.Parameters.AddWithValue("@LeaveTypeID", request.LeaveTypeID);
+                    cmd.Parameters.AddWithValue("@StatusID", request.StatusID);
+                    cmd.Parameters.AddWithValue("@StartDate", request.StartDate);
+                    cmd.Parameters.AddWithValue("@EndDate", request.EndDate);
+                    cmd.Parameters.AddWithValue("@Reason", request.Reason ?? string.Empty);
+
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("CreateLeaveRequest Error: " + ex.Message);
+                return false;
+            }
+        }
+
         public List<LeaveRequest> GetAllLeaveRequests()
         {
             var requests = new List<LeaveRequest>();
@@ -118,6 +149,31 @@ namespace Deer_Hub_Backend.DAL
             catch (Exception ex)
             {
                 Console.WriteLine("GetLeavesByStatus Error: " + ex.Message);
+            }
+            return leaves;
+        }
+
+        public List<LeaveRequest> GetLeavesByEmployee(int employeeId)
+        {
+            var leaves = new List<LeaveRequest>();
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    string sql = "SELECT * FROM LeaveRequests WHERE EmployeeID = @EmployeeID AND IsDeleted = 0";
+                    SqlCommand cmd = new SqlCommand(sql, con);
+                    cmd.Parameters.AddWithValue("@EmployeeID", employeeId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        leaves.Add(MapLeaveRequest(reader));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetLeavesByEmployee Error: " + ex.Message);
             }
             return leaves;
         }
