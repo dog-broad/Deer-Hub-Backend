@@ -1,0 +1,59 @@
+﻿using Deer_Hub_Backend.Services;
+using Deer_Hub_Backend.DAL;
+using Deer_Hub_Backend.Models;
+using Deer_Hub_Backend.UI.Helpers;
+
+namespace Deer_Hub_Backend.UI.Screens
+{
+    public static class LeaveTypeScreen
+    {
+        public static void Show()
+        {
+            var service = new LeaveTypeService(new LeaveTypeRepository());
+
+            var options = new List<string>
+            {
+                "List all leave types",
+                "Create new leave type",
+                "Update leave type",
+                "Delete leave type",
+                "Back"
+            };
+
+            int choice = MenuHelper.ShowMenu("Leave Type Service", options);
+            Console.Clear();
+
+            switch (choice)
+            {
+                case 0:
+                    var allTypes = service.GetAllLeaveTypes();
+                    AsciiTableHelper.PrintTable(allTypes);
+                    break;
+
+                case 1:
+                    string name = InputHelper.Prompt("Leave type name");
+                    string description = InputHelper.Prompt("Leave type description (optional)", false);
+                    string createResult = service.CreateLeaveType(name, description);
+                    Console.WriteLine(createResult);
+                    break;
+
+                case 2:
+                    int updateId = InputHelper.PromptInt("Leave type ID to update");
+                    string newName = InputHelper.Prompt("New name (optional)", false);
+                    string newDesc = InputHelper.Prompt("New description (optional)", false);
+                    string updateResult = service.UpdateLeaveType(updateId, newName, newDesc);
+                    Console.WriteLine(updateResult);
+                    break;
+
+                case 3:
+                    int deleteId = InputHelper.PromptInt("Leave type ID to delete");
+                    string deleteResult = service.DeleteLeaveType(deleteId);
+                    Console.WriteLine(deleteResult);
+                    break;
+
+                default:
+                    return;
+            }
+        }
+    }
+}
