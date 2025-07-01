@@ -1,12 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Department;  // Update this if your models are in a different namespace
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {
     public class DepartmentRepository
     {
+        public bool InsertDepartment(Department department)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("INSERT INTO Departments (Name, Description) VALUES (@Name, @Description)", con);
+                    cmd.Parameters.AddWithValue("@Name", department.Name);
+                    cmd.Parameters.AddWithValue("@Description", department.Description);
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("InsertDepartment Error: " + ex.Message);
+                return false;
+            }
+        }
+
         public List<Department> GetAllDepartments()
         {
             var departments = new List<Department>();
@@ -35,16 +55,33 @@ namespace Deer_Hub_Backend.DAL
             return departments;
         }
 
-        public bool UpdateDepartment(int id, string newName, string newDescription)
+        public bool UpdateDepartment(int id, string? newName, string? newDescription)
         {
             try
             {
                 using (var con = DBHelper.GetConnection())
                 {
-                    SqlCommand cmd = new SqlCommand("UPDATE Departments SET Name = @Name, Description = @Description WHERE DepartmentID = @ID", con);
-                    cmd.Parameters.AddWithValue("@Name", newName);
-                    cmd.Parameters.AddWithValue("@Description", newDescription);
+                    var updates = new List<string>();
+                    var cmd = new SqlCommand();
+                    cmd.Connection = con;
+
+                    if (!string.IsNullOrEmpty(newName))
+                    {
+                        updates.Add("Name = @Name");
+                        cmd.Parameters.AddWithValue("@Name", newName);
+                    }
+                    if (!string.IsNullOrEmpty(newDescription))
+                    {
+                        updates.Add("Description = @Description");
+                        cmd.Parameters.AddWithValue("@Description", newDescription);
+                    }
+
+                    if (updates.Count == 0)
+                        return false; // Nothing to update
+
+                    cmd.CommandText = $"UPDATE Departments SET {string.Join(", ", updates)} WHERE DepartmentID = @ID";
                     cmd.Parameters.AddWithValue("@ID", id);
+
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }

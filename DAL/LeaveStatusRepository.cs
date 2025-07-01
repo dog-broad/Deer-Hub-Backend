@@ -2,12 +2,30 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Deer_Hub_Backend.DAL;
-using LeaveStatus; // Update this namespace if your models are elsewhere
-
+using Deer_Hub_Backend.Models;
 namespace DAL
 {
     public class LeaveStatusRepository
     {
+        public bool InsertLeaveStatus(LeaveStatus status)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("INSERT INTO LeaveStatuses (StatusName) VALUES (@StatusName)", con);
+                    cmd.Parameters.AddWithValue("@StatusName", status.StatusName);
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("InsertLeaveStatus Error: " + ex.Message);
+                return false;
+            }
+        }
+
         public List<LeaveStatus> GetAllStatuses()
         {
             var statuses = new List<LeaveStatus>();

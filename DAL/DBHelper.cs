@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.SqlClient;
+using Deer_Hub_Backend.AppConfig;
 
 namespace Deer_Hub_Backend.DAL
 {
     public static class DBHelper
     {
-        private static readonly string connStr = ConfigurationManager.ConnectionStrings["DEERDB"].ConnectionString;
+        private static readonly string connStr = ConfigurationManager.GetConnectionString("DEERDB");
 
         public static SqlConnection GetConnection()
         {
