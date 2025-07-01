@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using LeaveType; // Adjust if your LeaveType model is in a different namespace
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {

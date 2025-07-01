@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using LeaveRequest; // Adjust based on your project structure
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {

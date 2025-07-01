@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Deer_Hub_Backend.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Announcement;
 
 namespace Deer_Hub_Backend.DAL
 {

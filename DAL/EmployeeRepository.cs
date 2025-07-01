@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Employee; // Adjust if your model namespace is different
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {

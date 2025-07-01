@@ -1,7 +1,7 @@
-﻿using UserUser; // Make sure your User model is in this namespace
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using Deer_Hub_Backend.Models;
 
 namespace Deer_Hub_Backend.DAL
 {

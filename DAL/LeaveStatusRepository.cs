@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Deer_Hub_Backend.DAL;
-using LeaveStatus; // Update this namespace if your models are elsewhere
-
+using Deer_Hub_Backend.Models;
 namespace DAL
 {
     public class LeaveStatusRepository
