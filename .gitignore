@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# foo.txt - Dummy file to have random content in the repository
+foo.txt
