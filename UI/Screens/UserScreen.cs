@@ -43,7 +43,7 @@ namespace Deer_Hub_Backend.UI.Screens
                     string newEmail = InputHelper.Prompt("New Email (optional)", false);
                     string newRole = InputHelper.Prompt("New Role (optional)", false);
                     bool isActive = InputHelper.PromptBool("Is Active");
-                    string updateResult = service.UpdateUser(id, newUsername, newEmail, null, newRole, null);
+                    string updateResult = service.UpdateUser(id, newUsername, newEmail, null, newRole, isActive);
                     Console.WriteLine(updateResult);
                     break;
 

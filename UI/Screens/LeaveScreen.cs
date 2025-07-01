@@ -53,12 +53,15 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 3:
                     int employeeId = InputHelper.PromptInt("Employee ID");
+                    int leaveTypeId = InputHelper.PromptInt("Leave Type ID");
                     DateTime startDate = InputHelper.PromptDate("Start Date");
                     DateTime endDate = InputHelper.PromptDate("End Date");
                     string reason = InputHelper.Prompt("Reason");
                     var newLeave = new LeaveRequest
                     {
                         EmployeeID = employeeId,
+                        LeaveTypeID = leaveTypeId,
+                        StatusID = 1,
                         StartDate = startDate,
                         EndDate = endDate,
                         Reason = reason

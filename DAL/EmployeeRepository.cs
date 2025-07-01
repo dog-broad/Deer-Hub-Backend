@@ -70,7 +70,7 @@ namespace Deer_Hub_Backend.DAL
             return employees;
         }
 
-        public bool UpdateEmployee(int employeeId, string? fullName = null, int? departmentId = null, DateTime? dateOfJoining = null)
+        public bool UpdateEmployee(int employeeId, string? fullName = null, int? departmentId = null, DateTime? dateOfJoining = null, string? phoneNumber = null)
         {
             try
             {
@@ -91,6 +91,11 @@ namespace Deer_Hub_Backend.DAL
                 {
                     updates.Add("DateOfJoining = @DateOfJoining");
                     parameters.Add(new SqlParameter("@DateOfJoining", dateOfJoining.Value));
+                }
+                if (phoneNumber != null)
+                {
+                    updates.Add("PhoneNumber = @PhoneNumber");
+                    parameters.Add(new SqlParameter("@PhoneNumber", phoneNumber));
                 }
 
                 if (updates.Count == 0)

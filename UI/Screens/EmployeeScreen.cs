@@ -31,15 +31,19 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 1:
+                    string userIdInput = InputHelper.Prompt("User ID (required)");
                     string fullName = InputHelper.Prompt("Full Name");
                     int departmentId = InputHelper.PromptInt("Department ID");
                     DateTime dateOfJoining = InputHelper.PromptDate("Date of Joining");
+                    string phoneNumber = InputHelper.Prompt("Phone Number (optional)", false);
 
                     var newEmployee = new Employee
                     {
+                        UserID = int.Parse(userIdInput),
                         FullName = fullName,
                         DepartmentID = departmentId,
-                        DateOfJoining = dateOfJoining
+                        DateOfJoining = dateOfJoining,
+                        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber,
                     };
 
                     string createResult = service.CreateEmployee(newEmployee);
@@ -51,6 +55,7 @@ namespace Deer_Hub_Backend.UI.Screens
                     string newFullName = InputHelper.Prompt("New Full Name (optional)", false);
                     string deptInput = InputHelper.Prompt("New Department ID (optional)", false);
                     string dateInput = InputHelper.Prompt("New Date of Joining (optional)", false);
+                    string newPhoneNumber = InputHelper.Prompt("New Phone Number (optional)", false);
 
                     int? newDeptId = null;
                     if (int.TryParse(deptInput, out int parsedDeptId))
@@ -63,7 +68,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     string updateResult = service.UpdateEmployee(updateId,
                         string.IsNullOrWhiteSpace(newFullName) ? null : newFullName,
                         newDeptId,
-                        newDateOfJoining);
+                        newDateOfJoining,
+                        string.IsNullOrWhiteSpace(newPhoneNumber) ? null : newPhoneNumber);
                     Console.WriteLine(updateResult);
                     break;
 
