@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using LeaveRequestBackend.Models;
+using Deer_Hub_Backend.Models;
 
-namespace LeaveRequestBackend.Validators
+namespace Deer_Hub_Backend.Validators
 {
     public static class LeaveValidator
     {
