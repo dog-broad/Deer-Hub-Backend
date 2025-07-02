@@ -34,12 +34,15 @@ namespace Deer_Hub_Backend.Services
             return _repository.GetAllEmployees();
         }
 
-        public string UpdateEmployee(int employeeId, string? fullName = null, int? departmentId = null, DateTime? dateOfJoining = null, string? phoneNumber = null)
+        public string UpdateEmployee(Employee employee)
         {
-            if (fullName == null && departmentId == null && dateOfJoining == null && phoneNumber == null)
-                return "Nothing to update.";
-
-            bool success = _repository.UpdateEmployee(employeeId, fullName, departmentId, dateOfJoining, phoneNumber);
+            if (string.IsNullOrWhiteSpace(employee.FullName))
+                return "Full name is required.";
+            if (employee.DepartmentID <= 0)
+                return "Invalid department ID.";
+            if (employee.DateOfJoining > DateTime.Now)
+                return "Date of joining cannot be in the future.";
+            bool success = _repository.UpdateEmployee(employee);
             return success ? "Employee updated successfully." : "Failed to update employee.";
         }
 

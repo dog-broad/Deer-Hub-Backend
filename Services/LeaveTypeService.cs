@@ -34,12 +34,11 @@ namespace Deer_Hub_Backend.Services
             return _repository.GetAllLeaveTypes();
         }
 
-        public string UpdateLeaveType(int id, string? name = null, string? description = null)
+        public string UpdateLeaveType(LeaveType leaveType)
         {
-            if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(description))
-                return "Nothing to update.";
-
-            bool updated = _repository.UpdateLeaveType(id, name?.Trim(), description?.Trim());
+            if (string.IsNullOrWhiteSpace(leaveType.Name))
+                return "Leave type name cannot be empty.";
+            bool updated = _repository.UpdateLeaveType(leaveType);
             return updated ? "Leave type updated successfully." : "Failed to update leave type.";
         }
 

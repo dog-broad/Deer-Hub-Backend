@@ -55,33 +55,16 @@ namespace Deer_Hub_Backend.DAL
             return departments;
         }
 
-        public bool UpdateDepartment(int id, string? newName, string? newDescription)
+        public bool UpdateDepartment(Department department)
         {
             try
             {
                 using (var con = DBHelper.GetConnection())
                 {
-                    var updates = new List<string>();
-                    var cmd = new SqlCommand();
-                    cmd.Connection = con;
-
-                    if (!string.IsNullOrEmpty(newName))
-                    {
-                        updates.Add("Name = @Name");
-                        cmd.Parameters.AddWithValue("@Name", newName);
-                    }
-                    if (!string.IsNullOrEmpty(newDescription))
-                    {
-                        updates.Add("Description = @Description");
-                        cmd.Parameters.AddWithValue("@Description", newDescription);
-                    }
-
-                    if (updates.Count == 0)
-                        return false; // Nothing to update
-
-                    cmd.CommandText = $"UPDATE Departments SET {string.Join(", ", updates)} WHERE DepartmentID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
-
+                    SqlCommand cmd = new SqlCommand("UPDATE Departments SET Name = @Name, Description = @Description WHERE DepartmentID = @DepartmentID", con);
+                    cmd.Parameters.AddWithValue("@Name", department.Name);
+                    cmd.Parameters.AddWithValue("@Description", department.Description ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@DepartmentID", department.DepartmentID);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }
@@ -110,6 +93,34 @@ namespace Deer_Hub_Backend.DAL
                 Console.WriteLine("DeleteDepartment Error: " + ex.Message);
                 return false;
             }
+        }
+
+        public Department GetDepartmentById(int departmentId)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM Departments WHERE DepartmentID = @DepartmentID", con);
+                    cmd.Parameters.AddWithValue("@DepartmentID", departmentId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return new Department
+                        {
+                            DepartmentID = (int)reader["DepartmentID"],
+                            Name = reader["Name"].ToString(),
+                            Description = reader["Description"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetDepartmentById Error: " + ex.Message);
+            }
+            return null;
         }
     }
 }

@@ -46,12 +46,18 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 2:
                     int updateId = InputHelper.PromptInt("Department ID");
-                    string newName = InputHelper.Prompt("New Name (optional)", false);
-                    string newDescription = InputHelper.Prompt("New Description (optional)", false);
-
-                    string updateResult = service.UpdateDepartment(updateId,
-                        string.IsNullOrWhiteSpace(newName) ? null : newName,
-                        string.IsNullOrWhiteSpace(newDescription) ? null : newDescription);
+                    var repo = new DepartmentRepository();
+                    var existing = repo.GetDepartmentById(updateId);
+                    if (existing == null)
+                    {
+                        Console.WriteLine("Department not found.");
+                        break;
+                    }
+                    string newName = InputHelper.Prompt($"New Name (current: {existing.Name})", false);
+                    string newDescription = InputHelper.Prompt($"New Description (current: {existing.Description})", false);
+                    existing.Name = string.IsNullOrWhiteSpace(newName) ? existing.Name : newName;
+                    existing.Description = string.IsNullOrWhiteSpace(newDescription) ? existing.Description : newDescription;
+                    string updateResult = service.UpdateDepartment(existing);
                     Console.WriteLine(updateResult);
                     break;
 

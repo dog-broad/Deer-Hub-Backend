@@ -39,8 +39,16 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 2:
                     int updateId = InputHelper.PromptInt("Leave status ID to update");
-                    string newName = InputHelper.Prompt("New status name");
-                    string updateResult = service.UpdateStatus(updateId, newName);
+                    var repo = new LeaveStatusRepository();
+                    var existing = repo.GetLeaveStatusById(updateId);
+                    if (existing == null)
+                    {
+                        Console.WriteLine("Leave status not found.");
+                        break;
+                    }
+                    string newName = InputHelper.Prompt($"New status name (current: {existing.StatusName})");
+                    existing.StatusName = string.IsNullOrWhiteSpace(newName) ? existing.StatusName : newName;
+                    string updateResult = service.UpdateStatus(existing);
                     Console.WriteLine(updateResult);
                     break;
 

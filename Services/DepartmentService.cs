@@ -27,12 +27,12 @@ namespace Deer_Hub_Backend.Services
             return _repository.GetAllDepartments();
         }
 
-        public string UpdateDepartment(int departmentId, string? newName, string? newDescription)
+        public string UpdateDepartment(Department department)
         {
-            if (string.IsNullOrWhiteSpace(newName) && string.IsNullOrWhiteSpace(newDescription))
-                return "Nothing to update.";
+            if (string.IsNullOrWhiteSpace(department.Name))
+                return "Department name is required.";
 
-            bool success = _repository.UpdateDepartment(departmentId, newName, newDescription);
+            bool success = _repository.UpdateDepartment(department);
             return success ? "Department updated successfully." : "Failed to update department.";
         }
 

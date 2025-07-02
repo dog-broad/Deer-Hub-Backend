@@ -70,46 +70,20 @@ namespace Deer_Hub_Backend.DAL
             return employees;
         }
 
-        public bool UpdateEmployee(int employeeId, string? fullName = null, int? departmentId = null, DateTime? dateOfJoining = null, string? phoneNumber = null)
+        public bool UpdateEmployee(Employee emp)
         {
             try
             {
-                var updates = new List<string>();
-                var parameters = new List<SqlParameter>();
-
-                if (fullName != null)
-                {
-                    updates.Add("FullName = @FullName");
-                    parameters.Add(new SqlParameter("@FullName", fullName));
-                }
-                if (departmentId.HasValue)
-                {
-                    updates.Add("DepartmentID = @DepartmentID");
-                    parameters.Add(new SqlParameter("@DepartmentID", departmentId.Value));
-                }
-                if (dateOfJoining.HasValue)
-                {
-                    updates.Add("DateOfJoining = @DateOfJoining");
-                    parameters.Add(new SqlParameter("@DateOfJoining", dateOfJoining.Value));
-                }
-                if (phoneNumber != null)
-                {
-                    updates.Add("PhoneNumber = @PhoneNumber");
-                    parameters.Add(new SqlParameter("@PhoneNumber", phoneNumber));
-                }
-
-                if (updates.Count == 0)
-                    return false; // Nothing to update
-
-                updates.Add("ModifiedAt = GETDATE()");
-
-                string sql = $"UPDATE Employees SET {string.Join(", ", updates)} WHERE EmployeeID = @EmployeeID";
-                parameters.Add(new SqlParameter("@EmployeeID", employeeId));
-
                 using (var con = DBHelper.GetConnection())
                 {
+                    string sql = @"UPDATE Employees SET FullName = @FullName, DepartmentID = @DepartmentID, DateOfJoining = @DateOfJoining, PhoneNumber = @PhoneNumber, IsActive = @IsActive, ModifiedAt = GETDATE() WHERE EmployeeID = @EmployeeID";
                     SqlCommand cmd = new SqlCommand(sql, con);
-                    cmd.Parameters.AddRange(parameters.ToArray());
+                    cmd.Parameters.AddWithValue("@FullName", emp.FullName);
+                    cmd.Parameters.AddWithValue("@DepartmentID", emp.DepartmentID);
+                    cmd.Parameters.AddWithValue("@DateOfJoining", emp.DateOfJoining);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", emp.PhoneNumber ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@IsActive", emp.IsActive);
+                    cmd.Parameters.AddWithValue("@EmployeeID", emp.EmployeeID);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }

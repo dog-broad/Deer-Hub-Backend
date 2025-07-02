@@ -37,12 +37,11 @@ namespace Deer_Hub_Backend.Services
             return _repository.GetAllUsers();
         }
 
-        public string UpdateUser(int userId, string? username = null, string? email = null, string? passwordHash = null, string? role = null, bool? isActive = null)
+        public string UpdateUser(User user)
         {
-            if (username == null && email == null && passwordHash == null && role == null && isActive == null)
-                return "Nothing to update.";
-
-            bool updated = _repository.UpdateUser(userId, username?.Trim(), email?.Trim(), passwordHash, role?.Trim(), isActive);
+            if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.PasswordHash) || string.IsNullOrWhiteSpace(user.Role))
+                return "All user fields are required.";
+            bool updated = _repository.UpdateUser(user);
             return updated ? "User updated successfully." : "Failed to update user.";
         }
 

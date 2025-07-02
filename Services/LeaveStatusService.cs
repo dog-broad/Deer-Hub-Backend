@@ -29,12 +29,11 @@ namespace Deer_Hub_Backend.Services
             return _repository.GetAllStatuses();
         }
 
-        public string UpdateStatus(int id, string statusName)
+        public string UpdateStatus(LeaveStatus status)
         {
-            if (string.IsNullOrWhiteSpace(statusName))
+            if (string.IsNullOrWhiteSpace(status.StatusName))
                 return "Status name cannot be empty.";
-
-            bool updated = _repository.UpdateStatus(id, statusName);
+            bool updated = _repository.UpdateStatus(status);
             return updated ? "Leave status updated successfully." : "Failed to update leave status.";
         }
 
