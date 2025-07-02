@@ -124,5 +124,77 @@
             }
             return role;
         }
+
+        // Prompt for User ID with options and validation
+        public static int PromptUserId(Services.UserService userService, string label)
+        {
+            var users = userService.GetAllUsers();
+            Console.WriteLine("Available Users:");
+            foreach (var user in users)
+                Console.WriteLine($"  {user.UserID}: {user.Username} ({user.Email})");
+            int id;
+            while (true)
+            {
+                id = PromptInt(label);
+                if (users.Any(u => u.UserID == id))
+                    break;
+                Console.WriteLine("Invalid User ID. Please select from the list above.");
+            }
+            return id;
+        }
+
+        // Prompt for Employee ID with options and validation
+        public static int PromptEmployeeId(Services.EmployeeService employeeService, string label)
+        {
+            var employees = employeeService.GetAllEmployees();
+            Console.WriteLine("Available Employees:");
+            foreach (var emp in employees)
+                Console.WriteLine($"  {emp.EmployeeID}: {emp.FullName}");
+            int id;
+            while (true)
+            {
+                id = PromptInt(label);
+                if (employees.Any(e => e.EmployeeID == id))
+                    break;
+                Console.WriteLine("Invalid Employee ID. Please select from the list above.");
+            }
+            return id;
+        }
+
+        // Prompt for Leave ID with options and validation
+        public static int PromptLeaveId(Services.LeaveService leaveService, string label)
+        {
+            var leaves = leaveService.GetAllLeaveRequests();
+            Console.WriteLine("Available Leave Requests:");
+            foreach (var leave in leaves)
+                Console.WriteLine($"  {leave.LeaveID}: Employee {leave.EmployeeID}, {leave.StartDate:yyyy-MM-dd} to {leave.EndDate:yyyy-MM-dd}, Status {leave.StatusID}");
+            int id;
+            while (true)
+            {
+                id = PromptInt(label);
+                if (leaves.Any(l => l.LeaveID == id))
+                    break;
+                Console.WriteLine("Invalid Leave ID. Please select from the list above.");
+            }
+            return id;
+        }
+
+        // Prompt for Announcement ID with options and validation
+        public static int PromptAnnouncementId(Services.AnnouncementService announcementService, string label)
+        {
+            var announcements = announcementService.GetVisibleAnnouncements();
+            Console.WriteLine("Available Announcements:");
+            foreach (var ann in announcements)
+                Console.WriteLine($"  {ann.AnnouncementID}: {ann.Title}");
+            int id;
+            while (true)
+            {
+                id = PromptInt(label);
+                if (announcements.Any(a => a.AnnouncementID == id))
+                    break;
+                Console.WriteLine("Invalid Announcement ID. Please select from the list above.");
+            }
+            return id;
+        }
     }
 }

@@ -38,7 +38,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 2:
-                    int id = InputHelper.PromptInt("User ID");
+                    var userService = new UserService(new DAL.UserRepository());
+                    int id = InputHelper.PromptUserId(userService, "User ID");
                     var repo = new DAL.UserRepository();
                     var existing = repo.GetUserById(id);
                     if (existing == null)
@@ -55,13 +56,14 @@ namespace Deer_Hub_Backend.UI.Screens
                     existing.PasswordHash = string.IsNullOrWhiteSpace(newPassword) ? existing.PasswordHash : newPassword;
                     existing.Role = string.IsNullOrWhiteSpace(newRole) ? existing.Role : newRole;
                     existing.IsActive = InputHelper.PromptBool($"Is Active (current: {(existing.IsActive ? "Yes" : "No")})");
-                    string updateResult = service.UpdateUser(existing);
+                    string updateResult = userService.UpdateUser(existing);
                     Console.WriteLine(updateResult);
                     break;
 
                 case 3:
-                    int deleteId = InputHelper.PromptInt("User ID to delete");
-                    Console.WriteLine(service.DeleteUser(deleteId));
+                    var userServiceDel = new UserService(new DAL.UserRepository());
+                    int deleteId = InputHelper.PromptUserId(userServiceDel, "User ID to delete");
+                    Console.WriteLine(userServiceDel.DeleteUser(deleteId));
                     break;
 
                 default: return;

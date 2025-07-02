@@ -43,7 +43,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 2:
-                    int updateId = InputHelper.PromptInt("Announcement ID");
+                    var announcementService = new AnnouncementService(new AnnouncementRepository());
+                    int updateId = InputHelper.PromptAnnouncementId(announcementService, "Announcement ID");
                     var repo = new AnnouncementRepository();
                     var existing = repo.GetAnnouncementById(updateId);
                     if (existing == null)
@@ -56,13 +57,14 @@ namespace Deer_Hub_Backend.UI.Screens
                     existing.Title = string.IsNullOrWhiteSpace(newTitle) ? existing.Title : newTitle;
                     existing.Description = string.IsNullOrWhiteSpace(newDescription) ? existing.Description : newDescription;
                     existing.IsVisible = InputHelper.PromptBool($"Is Visible (current: {(existing.IsVisible ? "Yes" : "No")})");
-                    string updateResult = service.UpdateAnnouncement(existing);
+                    string updateResult = announcementService.UpdateAnnouncement(existing);
                     Console.WriteLine(updateResult);
                     break;
 
                 case 3:
-                    int deleteId = InputHelper.PromptInt("Announcement ID to delete");
-                    Console.WriteLine(service.DeleteAnnouncement(deleteId));
+                    var announcementServiceDel = new AnnouncementService(new AnnouncementRepository());
+                    int deleteId = InputHelper.PromptAnnouncementId(announcementServiceDel, "Announcement ID to delete");
+                    Console.WriteLine(announcementServiceDel.DeleteAnnouncement(deleteId));
                     break;
 
                 default:

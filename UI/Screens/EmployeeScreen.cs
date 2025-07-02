@@ -50,7 +50,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 2:
-                    int updateId = InputHelper.PromptInt("Employee ID");
+                    var employeeService = new EmployeeService(new EmployeeRepository());
+                    int updateId = InputHelper.PromptEmployeeId(employeeService, "Employee ID");
                     var repo = new EmployeeRepository();
                     var existing = repo.GetEmployeeById(updateId);
                     if (existing == null)
@@ -72,13 +73,14 @@ namespace Deer_Hub_Backend.UI.Screens
                     if (DateTime.TryParse(dateInput, out DateTime parsedDate)) existing.DateOfJoining = parsedDate;
                     if (!string.IsNullOrWhiteSpace(newPhoneNumber)) existing.PhoneNumber = newPhoneNumber;
                     existing.IsActive = InputHelper.PromptBool($"Is Active (current: {(existing.IsActive ? "Yes" : "No")})");
-                    string updateResult = service.UpdateEmployee(existing);
+                    string updateResult = employeeService.UpdateEmployee(existing);
                     Console.WriteLine(updateResult);
                     break;
 
                 case 3:
-                    int deleteId = InputHelper.PromptInt("Employee ID to delete");
-                    Console.WriteLine(service.DeleteEmployee(deleteId));
+                    var employeeServiceDel = new EmployeeService(new EmployeeRepository());
+                    int deleteId = InputHelper.PromptEmployeeId(employeeServiceDel, "Employee ID to delete");
+                    Console.WriteLine(employeeServiceDel.DeleteEmployee(deleteId));
                     break;
 
                 default:
