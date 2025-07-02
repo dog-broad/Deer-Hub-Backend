@@ -45,7 +45,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 2:
-                    int updateId = InputHelper.PromptInt("Department ID");
+                    var departmentService = new DepartmentService(new DepartmentRepository());
+                    int updateId = InputHelper.PromptDepartmentId(departmentService, "Department ID");
                     var repo = new DepartmentRepository();
                     var existing = repo.GetDepartmentById(updateId);
                     if (existing == null)
@@ -57,13 +58,14 @@ namespace Deer_Hub_Backend.UI.Screens
                     string newDescription = InputHelper.Prompt($"New Description (current: {existing.Description})", false);
                     existing.Name = string.IsNullOrWhiteSpace(newName) ? existing.Name : newName;
                     existing.Description = string.IsNullOrWhiteSpace(newDescription) ? existing.Description : newDescription;
-                    string updateResult = service.UpdateDepartment(existing);
+                    string updateResult = departmentService.UpdateDepartment(existing);
                     Console.WriteLine(updateResult);
                     break;
 
                 case 3:
-                    int deleteId = InputHelper.PromptInt("Department ID to delete");
-                    Console.WriteLine(service.DeleteDepartment(deleteId));
+                    var departmentServiceDel = new DepartmentService(new DepartmentRepository());
+                    int deleteId = InputHelper.PromptDepartmentId(departmentServiceDel, "Department ID to delete");
+                    Console.WriteLine(departmentServiceDel.DeleteDepartment(deleteId));
                     break;
 
                 default:

@@ -38,7 +38,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 2:
-                    int updateId = InputHelper.PromptInt("Leave status ID to update");
+                    var leaveStatusService = new LeaveStatusService(new LeaveStatusRepository());
+                    int updateId = InputHelper.PromptLeaveStatusId(leaveStatusService, "Leave status ID to update");
                     var repo = new LeaveStatusRepository();
                     var existing = repo.GetLeaveStatusById(updateId);
                     if (existing == null)
@@ -48,13 +49,14 @@ namespace Deer_Hub_Backend.UI.Screens
                     }
                     string newName = InputHelper.Prompt($"New status name (current: {existing.StatusName})");
                     existing.StatusName = string.IsNullOrWhiteSpace(newName) ? existing.StatusName : newName;
-                    string updateResult = service.UpdateStatus(existing);
+                    string updateResult = leaveStatusService.UpdateStatus(existing);
                     Console.WriteLine(updateResult);
                     break;
 
                 case 3:
-                    int deleteId = InputHelper.PromptInt("Leave status ID to delete");
-                    string deleteResult = service.DeleteStatus(deleteId);
+                    var leaveStatusServiceDel = new LeaveStatusService(new LeaveStatusRepository());
+                    int deleteId = InputHelper.PromptLeaveStatusId(leaveStatusServiceDel, "Leave status ID to delete");
+                    string deleteResult = leaveStatusServiceDel.DeleteStatus(deleteId);
                     Console.WriteLine(deleteResult);
                     break;
 

@@ -32,7 +32,7 @@ namespace Deer_Hub_Backend.UI.Screens
                     string username = InputHelper.Prompt("Username");
                     string email = InputHelper.Prompt("Email");
                     string password = InputHelper.Prompt("Password Hash");
-                    string role = InputHelper.Prompt("Role");
+                    string role = InputHelper.PromptRole("Role");
                     string result = service.CreateUser(username, email, password, role);
                     Console.WriteLine(result);
                     break;
@@ -49,7 +49,7 @@ namespace Deer_Hub_Backend.UI.Screens
                     string newUsername = InputHelper.Prompt($"New Username (current: {existing.Username})", false);
                     string newEmail = InputHelper.Prompt($"New Email (current: {existing.Email})", false);
                     string newPassword = InputHelper.Prompt($"New Password Hash (current: {existing.PasswordHash})", false);
-                    string newRole = InputHelper.Prompt($"New Role (current: {existing.Role})", false);
+                    string newRole = InputHelper.PromptRole($"New Role (current: {existing.Role})");
                     existing.Username = string.IsNullOrWhiteSpace(newUsername) ? existing.Username : newUsername;
                     existing.Email = string.IsNullOrWhiteSpace(newEmail) ? existing.Email : newEmail;
                     existing.PasswordHash = string.IsNullOrWhiteSpace(newPassword) ? existing.PasswordHash : newPassword;

@@ -34,21 +34,9 @@ namespace Deer_Hub_Backend.UI.Screens
                 case 1:
                     string userIdInput = InputHelper.Prompt("User ID (required)");
                     string fullName = InputHelper.Prompt("Full Name");
-                    // Fetch departments
-                    var departments = department_service.GetAllDepartments();
-
-                    Console.WriteLine("\nAvailable Departments:");
-                    Console.WriteLine("────────────────────────────");
-                    foreach (var department in departments)
-                    {
-                        Console.WriteLine($"ID: {department.DepartmentID} | Name: {department.Name}");
-                    }
-                    Console.WriteLine("────────────────────────────");
-
-                    int departmentId = InputHelper.PromptInt("Department ID");
+                    int departmentId = InputHelper.PromptDepartmentId(department_service, "Department ID");
                     DateTime dateOfJoining = InputHelper.PromptDate("Date of Joining");
                     string phoneNumber = InputHelper.Prompt("Phone Number (optional)", false);
-
                     var newEmployee = new Employee
                     {
                         UserID = int.Parse(userIdInput),
@@ -57,7 +45,6 @@ namespace Deer_Hub_Backend.UI.Screens
                         DateOfJoining = dateOfJoining,
                         PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber,
                     };
-
                     string createResult = service.CreateEmployee(newEmployee);
                     Console.WriteLine(createResult);
                     break;
@@ -72,11 +59,16 @@ namespace Deer_Hub_Backend.UI.Screens
                         break;
                     }
                     string newFullName = InputHelper.Prompt($"New Full Name (current: {existing.FullName})", false);
-                    string deptInput = InputHelper.Prompt($"New Department ID (current: {existing.DepartmentID})", false);
+                    string deptInput = null;
+                    int? parsedDeptId = null;
+                    if (department_service.GetAllDepartments().Count > 0)
+                    {
+                        parsedDeptId = InputHelper.PromptDepartmentId(department_service, $"New Department ID (current: {existing.DepartmentID})");
+                    }
                     string dateInput = InputHelper.Prompt($"New Date of Joining (current: {existing.DateOfJoining:yyyy-MM-dd})", false);
                     string newPhoneNumber = InputHelper.Prompt($"New Phone Number (current: {existing.PhoneNumber})", false);
                     if (!string.IsNullOrWhiteSpace(newFullName)) existing.FullName = newFullName;
-                    if (int.TryParse(deptInput, out int parsedDeptId)) existing.DepartmentID = parsedDeptId;
+                    if (parsedDeptId.HasValue) existing.DepartmentID = parsedDeptId.Value;
                     if (DateTime.TryParse(dateInput, out DateTime parsedDate)) existing.DateOfJoining = parsedDate;
                     if (!string.IsNullOrWhiteSpace(newPhoneNumber)) existing.PhoneNumber = newPhoneNumber;
                     existing.IsActive = InputHelper.PromptBool($"Is Active (current: {(existing.IsActive ? "Yes" : "No")})");
