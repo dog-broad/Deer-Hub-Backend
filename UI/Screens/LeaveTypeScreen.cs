@@ -38,7 +38,8 @@ namespace Deer_Hub_Backend.UI.Screens
                     break;
 
                 case 2:
-                    int updateId = InputHelper.PromptInt("Leave type ID to update");
+                    var leaveTypeService = new LeaveTypeService(new LeaveTypeRepository());
+                    int updateId = InputHelper.PromptLeaveTypeId(leaveTypeService, "Leave type ID to update");
                     var repo = new LeaveTypeRepository();
                     var existing = repo.GetLeaveTypeById(updateId);
                     if (existing == null)
@@ -50,13 +51,14 @@ namespace Deer_Hub_Backend.UI.Screens
                     string newDesc = InputHelper.Prompt($"New description (current: {existing.Description})", false);
                     existing.Name = string.IsNullOrWhiteSpace(newName) ? existing.Name : newName;
                     existing.Description = string.IsNullOrWhiteSpace(newDesc) ? existing.Description : newDesc;
-                    string updateResult = service.UpdateLeaveType(existing);
+                    string updateResult = leaveTypeService.UpdateLeaveType(existing);
                     Console.WriteLine(updateResult);
                     break;
 
                 case 3:
-                    int deleteId = InputHelper.PromptInt("Leave type ID to delete");
-                    string deleteResult = service.DeleteLeaveType(deleteId);
+                    var leaveTypeServiceDel = new LeaveTypeService(new LeaveTypeRepository());
+                    int deleteId = InputHelper.PromptLeaveTypeId(leaveTypeServiceDel, "Leave type ID to delete");
+                    string deleteResult = leaveTypeServiceDel.DeleteLeaveType(deleteId);
                     Console.WriteLine(deleteResult);
                     break;
 
