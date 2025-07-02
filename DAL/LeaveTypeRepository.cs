@@ -55,33 +55,16 @@ namespace Deer_Hub_Backend.DAL
             return types;
         }
 
-        public bool UpdateLeaveType(int id, string? name, string? description)
+        public bool UpdateLeaveType(LeaveType leaveType)
         {
             try
             {
                 using (var con = DBHelper.GetConnection())
                 {
-                    var updates = new List<string>();
-                    var cmd = new SqlCommand();
-                    cmd.Connection = con;
-
-                    if (name != null)
-                    {
-                        updates.Add("Name = @Name");
-                        cmd.Parameters.AddWithValue("@Name", name);
-                    }
-                    if (description != null)
-                    {
-                        updates.Add("Description = @Description");
-                        cmd.Parameters.AddWithValue("@Description", description);
-                    }
-
-                    if (updates.Count == 0)
-                        return false; // Nothing to update
-
-                    string updateClause = string.Join(", ", updates);
-                    cmd.CommandText = $"UPDATE LeaveTypes SET {updateClause} WHERE LeaveTypeID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
+                    SqlCommand cmd = new SqlCommand("UPDATE LeaveTypes SET Name = @Name, Description = @Description WHERE LeaveTypeID = @LeaveTypeID", con);
+                    cmd.Parameters.AddWithValue("@Name", leaveType.Name);
+                    cmd.Parameters.AddWithValue("@Description", leaveType.Description ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@LeaveTypeID", leaveType.LeaveTypeID);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }
@@ -110,6 +93,34 @@ namespace Deer_Hub_Backend.DAL
                 Console.WriteLine("DeleteLeaveType Error: " + ex.Message);
                 return false;
             }
+        }
+
+        public LeaveType GetLeaveTypeById(int leaveTypeId)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM LeaveTypes WHERE LeaveTypeID = @LeaveTypeID", con);
+                    cmd.Parameters.AddWithValue("@LeaveTypeID", leaveTypeId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return new LeaveType
+                        {
+                            LeaveTypeID = (int)reader["LeaveTypeID"],
+                            Name = reader["Name"].ToString(),
+                            Description = reader["Description"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetLeaveTypeById Error: " + ex.Message);
+            }
+            return null;
         }
     }
 }

@@ -39,9 +39,18 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 2:
                     int updateId = InputHelper.PromptInt("Leave type ID to update");
-                    string newName = InputHelper.Prompt("New name (optional)", false);
-                    string newDesc = InputHelper.Prompt("New description (optional)", false);
-                    string updateResult = service.UpdateLeaveType(updateId, newName, newDesc);
+                    var repo = new LeaveTypeRepository();
+                    var existing = repo.GetLeaveTypeById(updateId);
+                    if (existing == null)
+                    {
+                        Console.WriteLine("Leave type not found.");
+                        break;
+                    }
+                    string newName = InputHelper.Prompt($"New name (current: {existing.Name})", false);
+                    string newDesc = InputHelper.Prompt($"New description (current: {existing.Description})", false);
+                    existing.Name = string.IsNullOrWhiteSpace(newName) ? existing.Name : newName;
+                    existing.Description = string.IsNullOrWhiteSpace(newDesc) ? existing.Description : newDesc;
+                    string updateResult = service.UpdateLeaveType(existing);
                     Console.WriteLine(updateResult);
                     break;
 

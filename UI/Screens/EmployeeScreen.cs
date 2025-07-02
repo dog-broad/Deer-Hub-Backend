@@ -64,24 +64,23 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 2:
                     int updateId = InputHelper.PromptInt("Employee ID");
-                    string newFullName = InputHelper.Prompt("New Full Name (optional)", false);
-                    string deptInput = InputHelper.Prompt("New Department ID (optional)", false);
-                    string dateInput = InputHelper.Prompt("New Date of Joining (optional)", false);
-                    string newPhoneNumber = InputHelper.Prompt("New Phone Number (optional)", false);
-
-                    int? newDeptId = null;
-                    if (int.TryParse(deptInput, out int parsedDeptId))
-                        newDeptId = parsedDeptId;
-
-                    DateTime? newDateOfJoining = null;
-                    if (DateTime.TryParse(dateInput, out DateTime parsedDate))
-                        newDateOfJoining = parsedDate;
-
-                    string updateResult = service.UpdateEmployee(updateId,
-                        string.IsNullOrWhiteSpace(newFullName) ? null : newFullName,
-                        newDeptId,
-                        newDateOfJoining,
-                        string.IsNullOrWhiteSpace(newPhoneNumber) ? null : newPhoneNumber);
+                    var repo = new EmployeeRepository();
+                    var existing = repo.GetEmployeeById(updateId);
+                    if (existing == null)
+                    {
+                        Console.WriteLine("Employee not found.");
+                        break;
+                    }
+                    string newFullName = InputHelper.Prompt($"New Full Name (current: {existing.FullName})", false);
+                    string deptInput = InputHelper.Prompt($"New Department ID (current: {existing.DepartmentID})", false);
+                    string dateInput = InputHelper.Prompt($"New Date of Joining (current: {existing.DateOfJoining:yyyy-MM-dd})", false);
+                    string newPhoneNumber = InputHelper.Prompt($"New Phone Number (current: {existing.PhoneNumber})", false);
+                    if (!string.IsNullOrWhiteSpace(newFullName)) existing.FullName = newFullName;
+                    if (int.TryParse(deptInput, out int parsedDeptId)) existing.DepartmentID = parsedDeptId;
+                    if (DateTime.TryParse(dateInput, out DateTime parsedDate)) existing.DateOfJoining = parsedDate;
+                    if (!string.IsNullOrWhiteSpace(newPhoneNumber)) existing.PhoneNumber = newPhoneNumber;
+                    existing.IsActive = InputHelper.PromptBool($"Is Active (current: {(existing.IsActive ? "Yes" : "No")})");
+                    string updateResult = service.UpdateEmployee(existing);
                     Console.WriteLine(updateResult);
                     break;
 

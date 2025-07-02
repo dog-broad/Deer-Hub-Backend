@@ -23,9 +23,9 @@ namespace Deer_Hub_Backend.Services
             return _repository.GetAllAnnouncements();
         }
 
-        public string UpdateAnnouncement(int id, string? title = null, string? description = null)
+        public string UpdateAnnouncement(Announcement announcement)
         {
-            bool success = _repository.UpdateAnnouncement(id, title, description);
+            bool success = _repository.UpdateAnnouncement(announcement);
             return success ? "Announcement updated successfully." : "No changes made or announcement not found.";
         }
 

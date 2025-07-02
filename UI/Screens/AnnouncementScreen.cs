@@ -44,11 +44,19 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 2:
                     int updateId = InputHelper.PromptInt("Announcement ID");
-                    string newTitle = InputHelper.Prompt("New Title (optional)", false);
-                    string newDescription = InputHelper.Prompt("New Description (optional)", false);
-                    string updateResult = service.UpdateAnnouncement(updateId,
-                        string.IsNullOrWhiteSpace(newTitle) ? null : newTitle,
-                        string.IsNullOrWhiteSpace(newDescription) ? null : newDescription);
+                    var repo = new AnnouncementRepository();
+                    var existing = repo.GetAnnouncementById(updateId);
+                    if (existing == null)
+                    {
+                        Console.WriteLine("Announcement not found.");
+                        break;
+                    }
+                    string newTitle = InputHelper.Prompt($"New Title (current: {existing.Title})", false);
+                    string newDescription = InputHelper.Prompt($"New Description (current: {existing.Description})", false);
+                    existing.Title = string.IsNullOrWhiteSpace(newTitle) ? existing.Title : newTitle;
+                    existing.Description = string.IsNullOrWhiteSpace(newDescription) ? existing.Description : newDescription;
+                    existing.IsVisible = InputHelper.PromptBool($"Is Visible (current: {(existing.IsVisible ? "Yes" : "No")})");
+                    string updateResult = service.UpdateAnnouncement(existing);
                     Console.WriteLine(updateResult);
                     break;
 

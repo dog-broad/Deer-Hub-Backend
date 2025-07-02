@@ -39,11 +39,23 @@ namespace Deer_Hub_Backend.UI.Screens
 
                 case 2:
                     int id = InputHelper.PromptInt("User ID");
-                    string newUsername = InputHelper.Prompt("New Username (optional)", false);
-                    string newEmail = InputHelper.Prompt("New Email (optional)", false);
-                    string newRole = InputHelper.Prompt("New Role (optional)", false);
-                    bool isActive = InputHelper.PromptBool("Is Active");
-                    string updateResult = service.UpdateUser(id, newUsername, newEmail, null, newRole, isActive);
+                    var repo = new DAL.UserRepository();
+                    var existing = repo.GetUserById(id);
+                    if (existing == null)
+                    {
+                        Console.WriteLine("User not found.");
+                        break;
+                    }
+                    string newUsername = InputHelper.Prompt($"New Username (current: {existing.Username})", false);
+                    string newEmail = InputHelper.Prompt($"New Email (current: {existing.Email})", false);
+                    string newPassword = InputHelper.Prompt($"New Password Hash (current: {existing.PasswordHash})", false);
+                    string newRole = InputHelper.Prompt($"New Role (current: {existing.Role})", false);
+                    existing.Username = string.IsNullOrWhiteSpace(newUsername) ? existing.Username : newUsername;
+                    existing.Email = string.IsNullOrWhiteSpace(newEmail) ? existing.Email : newEmail;
+                    existing.PasswordHash = string.IsNullOrWhiteSpace(newPassword) ? existing.PasswordHash : newPassword;
+                    existing.Role = string.IsNullOrWhiteSpace(newRole) ? existing.Role : newRole;
+                    existing.IsActive = InputHelper.PromptBool($"Is Active (current: {(existing.IsActive ? "Yes" : "No")})");
+                    string updateResult = service.UpdateUser(existing);
                     Console.WriteLine(updateResult);
                     break;
 

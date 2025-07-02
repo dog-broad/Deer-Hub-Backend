@@ -65,52 +65,19 @@ namespace Deer_Hub_Backend.DAL
             return users;
         }
 
-        public bool UpdateUser(int userId, string? username = null, string? email = null, string? passwordHash = null, string? role = null, bool? isActive = null)
+        public bool UpdateUser(User user)
         {
             try
             {
-                var updates = new List<string>();
-                var parameters = new List<SqlParameter>();
-
-                if (username != null)
-                {
-                    updates.Add("Username = @Username");
-                    parameters.Add(new SqlParameter("@Username", username));
-                }
-                if (email != null)
-                {
-                    updates.Add("Email = @Email");
-                    parameters.Add(new SqlParameter("@Email", email));
-                }
-                if (passwordHash != null)
-                {
-                    updates.Add("PasswordHash = @PasswordHash");
-                    parameters.Add(new SqlParameter("@PasswordHash", passwordHash));
-                }
-                if (role != null)
-                {
-                    updates.Add("Role = @Role");
-                    parameters.Add(new SqlParameter("@Role", role));
-                }
-                if (isActive.HasValue)
-                {
-                    updates.Add("IsActive = @IsActive");
-                    parameters.Add(new SqlParameter("@IsActive", isActive.Value));
-                }
-
-                if (updates.Count == 0)
-                    return false; // Nothing to update
-
-                updates.Add("ModifiedAt = GETDATE()");
-
-                var setClause = string.Join(", ", updates);
-                var query = $"UPDATE Users SET {setClause} WHERE UserID = @UserID";
-                parameters.Add(new SqlParameter("@UserID", userId));
-
                 using (var con = DBHelper.GetConnection())
                 {
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddRange(parameters.ToArray());
+                    SqlCommand cmd = new SqlCommand("UPDATE Users SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, IsActive = @IsActive, ModifiedAt = GETDATE() WHERE UserID = @UserID", con);
+                    cmd.Parameters.AddWithValue("@Username", user.Username);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                    cmd.Parameters.AddWithValue("@Role", user.Role);
+                    cmd.Parameters.AddWithValue("@IsActive", user.IsActive);
+                    cmd.Parameters.AddWithValue("@UserID", user.UserID);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }
@@ -140,6 +107,39 @@ namespace Deer_Hub_Backend.DAL
                 Console.WriteLine("DeleteUser Error: " + ex.Message);
                 return false;
             }
+        }
+
+        public User GetUserById(int userId)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM Users WHERE UserID = @UserID", con);
+                    cmd.Parameters.AddWithValue("@UserID", userId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return new User
+                        {
+                            UserID = (int)reader["UserID"],
+                            Username = reader["Username"].ToString(),
+                            Email = reader["Email"].ToString(),
+                            PasswordHash = reader["PasswordHash"].ToString(),
+                            Role = reader["Role"].ToString(),
+                            IsActive = (bool)reader["IsActive"],
+                            CreatedAt = (DateTime)reader["CreatedAt"],
+                            ModifiedAt = reader["ModifiedAt"] as DateTime?
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetUserById Error: " + ex.Message);
+            }
+            return null;
         }
     }
 }

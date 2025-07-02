@@ -53,15 +53,15 @@ namespace DAL
             return statuses;
         }
 
-        public bool UpdateStatus(int id, string statusName)
+        public bool UpdateStatus(LeaveStatus status)
         {
             try
             {
                 using (var con = DBHelper.GetConnection())
                 {
-                    SqlCommand cmd = new SqlCommand("UPDATE LeaveStatuses SET StatusName = @StatusName WHERE StatusID = @ID", con);
-                    cmd.Parameters.AddWithValue("@StatusName", statusName);
-                    cmd.Parameters.AddWithValue("@ID", id);
+                    SqlCommand cmd = new SqlCommand("UPDATE LeaveStatuses SET StatusName = @StatusName WHERE StatusID = @StatusID", con);
+                    cmd.Parameters.AddWithValue("@StatusName", status.StatusName);
+                    cmd.Parameters.AddWithValue("@StatusID", status.StatusID);
                     con.Open();
                     return cmd.ExecuteNonQuery() > 0;
                 }
@@ -90,6 +90,33 @@ namespace DAL
                 Console.WriteLine("DeleteStatus Error: " + ex.Message);
                 return false;
             }
+        }
+
+        public LeaveStatus GetLeaveStatusById(int statusId)
+        {
+            try
+            {
+                using (var con = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM LeaveStatuses WHERE StatusID = @StatusID", con);
+                    cmd.Parameters.AddWithValue("@StatusID", statusId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return new LeaveStatus
+                        {
+                            StatusID = (int)reader["StatusID"],
+                            StatusName = reader["StatusName"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetLeaveStatusById Error: " + ex.Message);
+            }
+            return null;
         }
     }
 }
