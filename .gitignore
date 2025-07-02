@@ -163,7 +163,8 @@ AutoTest.Net/
 # Web workbench (sass)
 .sass-cache/
 
-# Installshield output folder
+# Installshield 
+put folder
 [Ee]xpress/
 
 # DocProject is a documentation generator add-in
@@ -361,3 +362,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# foo.txt - Dummy file to have random content in the repository
+foo.txt
