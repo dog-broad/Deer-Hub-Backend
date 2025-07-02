@@ -10,6 +10,7 @@ namespace Deer_Hub_Backend.UI.Screens
         public static void Show()
         {
             var service = new EmployeeService(new EmployeeRepository());
+            var department_service = new DepartmentService(new DepartmentRepository());
 
             var options = new List<string>
             {
@@ -33,6 +34,17 @@ namespace Deer_Hub_Backend.UI.Screens
                 case 1:
                     string userIdInput = InputHelper.Prompt("User ID (required)");
                     string fullName = InputHelper.Prompt("Full Name");
+                    // Fetch departments
+                    var departments = department_service.GetAllDepartments();
+
+                    Console.WriteLine("\nAvailable Departments:");
+                    Console.WriteLine("────────────────────────────");
+                    foreach (var department in departments)
+                    {
+                        Console.WriteLine($"ID: {department.DepartmentID} | Name: {department.Name}");
+                    }
+                    Console.WriteLine("────────────────────────────");
+
                     int departmentId = InputHelper.PromptInt("Department ID");
                     DateTime dateOfJoining = InputHelper.PromptDate("Date of Joining");
                     string phoneNumber = InputHelper.Prompt("Phone Number (optional)", false);
